@@ -21,7 +21,7 @@ exports.createItem = async (payload) => {
 // Read All
 exports.getItems = async (payload) => {
   const conn = await connectDB();
-  const items = await Item.find();
+  const items = await Item.find().sort({createdAt: -1});
   return items;
 };
 
