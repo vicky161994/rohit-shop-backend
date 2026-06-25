@@ -1,0 +1,46 @@
+name: CI/CD for Lambda
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Update Lambda Layer if package.json changed
+      - name: Update Lambda Layer
+        if: contains(github.event.head_commit.message, 'package.json')
+        run: |
+          zip -r layer.zip node_modules
+          aws lambda publish-layer-version \
+            --layer-name rohit-shop \
+            --zip-file fileb://layer.zip \
+            --compatible-runtimes nodejs22.x
+
+      # Package Lambda function
+      - name: Package Lambda
+        run: |
+          zip -r function.zip . -x ".git*" ".github*" "tests/*"
+
+      # Deploy Lambda function
+      - name: Deploy Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name rohit-shop \
+            --zip-file fileb://function.zip
