@@ -1,20 +1,28 @@
+const connectDB = require('../config/database');
 const Item = require('../models/item');
 
 // Create
-exports.createItem = async (req, res) => {
+exports.createItem = async (payload) => {
   try {
-    const item = new Item(req.body);
-    await item.save();
-    res.status(201).json(item);
+    const item = new Item(payload);
+    const conn = await connectDB()
+    console.log({DBConnectionStatus : conn.connection.readyState})
+    const saveResp = await item.save();
+    console.log('data saved succesfully...')
+    return saveResp;
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    return {
+      errorCode: 400,
+      errorMessage: err
+    }
   }
 };
 
 // Read All
-exports.getItems = async (req, res) => {
+exports.getItems = async (payload) => {
+  const conn = await connectDB();
   const items = await Item.find();
-  res.json(items);
+  return items;
 };
 
 // Read One
@@ -24,9 +32,10 @@ exports.getItem = async (req, res) => {
 };
 
 // Update
-exports.updateItem = async (req, res) => {
-  const item = await Item.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  res.json(item);
+exports.updateItem = async (id, payload) => {
+  const conn = await connectDB();
+  const updateResp = await Item.findByIdAndUpdate(id, payload, { new: true });
+  return updateResp
 };
 
 // Delete
