@@ -48,8 +48,8 @@ async function insertIntoDatabase(event) {
 }
 
 async function getDataFromDatabase(event){
-    const id = event.queryStringParameters.id;
-    if(id) {
+    if(event.queryStringParameters){
+        const id = event.queryStringParameters?.id;
         const item = await getItemById(id);
         return item
     }
