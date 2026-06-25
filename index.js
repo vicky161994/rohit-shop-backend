@@ -22,7 +22,7 @@ exports.handler = async (event) => {
             result = await updateDatabase(event);
             break;
         default:
-            result = { message: 'Unsupported method' };
+            result = await defaultErrorMessage(eventMethod);
     }
     console.log('result is : ', result)
     return {
@@ -61,4 +61,11 @@ async function updateDatabase(event) {
     const updateResp = await updateItem(id, payload)
     console.log({updateResp})
     return updateResp;
+}
+
+async function defaultErrorMessage(eventMethod) {
+    const resp = {
+        message: `${eventMethod} Method not supported`
+    }
+    return resp;
 }
