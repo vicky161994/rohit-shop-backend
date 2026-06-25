@@ -26,9 +26,10 @@ exports.getItems = async (payload) => {
 };
 
 // Read One
-exports.getItem = async (req, res) => {
-  const item = await Item.findById(req.params.id);
-  res.json(item);
+exports.getItem = async (id) => {
+  const conn = await connectDB();
+  const item = await Item.findById(id);
+  return item
 };
 
 // Update

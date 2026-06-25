@@ -1,4 +1,4 @@
-const { createItem, getItems, updateItem } = require("./controllers/itemController");
+const { createItem, getItems, updateItem, getItem } = require("./controllers/itemController");
 const dotenv = require('dotenv');
 dotenv.config()
 
@@ -48,6 +48,11 @@ async function insertIntoDatabase(event) {
 }
 
 async function getDataFromDatabase(event){
+    const id = event.queryStringParameters.id;
+    if(id) {
+        const item = await getItemById(id);
+        return item
+    }
     const itemList = await getItems(event)
     return itemList
 }
@@ -71,4 +76,9 @@ async function defaultErrorMessage(eventMethod) {
         message: `${eventMethod} Method not supported`
     }
     return resp;
+}
+
+async function getItemById(id) {
+    const item = await getItem(id);
+    return item;
 }
