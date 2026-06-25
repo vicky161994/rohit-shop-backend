@@ -2,6 +2,11 @@ const { createItem, getItems, updateItem } = require("./controllers/itemControll
 const dotenv = require('dotenv');
 dotenv.config()
 
+const CORS_HEADERS = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+};
+
 exports.handler = async (event) => {
     const eventMethod = event.httpMethod
     let result;
@@ -23,6 +28,7 @@ exports.handler = async (event) => {
     return {
     statusCode: 200,
     body: JSON.stringify(result),
+    headers: CORS_HEADERS,
   };
 }
 
